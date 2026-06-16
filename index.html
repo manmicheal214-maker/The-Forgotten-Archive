@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Forgotten Archive</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        margin: 0;
+        text-align: center;
+    }
+
+    header {
+        background: #222;
+        padding: 20px;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .room {
+        display: none;
+        padding: 30px;
+        max-width: 700px;
+        margin: auto;
+    }
+
+    .active {
+        display: block;
+    }
+
+    button {
+        padding: 12px 20px;
+        margin: 10px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    input {
+        padding: 10px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 80px);
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .tile {
+        width: 80px;
+        height: 80px;
+        font-size: 30px;
+    }
+
+    .hidden-word {
+        letter-spacing: 4px;
+        font-size: 28px;
+    }
+
+    #status {
+        padding: 10px;
+        background: #333;
+    }
+
+    .success {
+        color: lightgreen;
+    }
+
+    .fail {
+        color: tomato;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+🏛️ The Forgotten Archive
+</header>
+
+<div id="status">
+Keys Collected:
+<span id="keys">0</span> / 4
+</div>
+
+<!-- Intro -->
+
+<div id="intro" class="room active">
+<h2>Welcome Explorer</h2>
+
+<p>
+You awaken inside an ancient archive.
+Solve every challenge and collect all four keys to escape.
+</p>
+
+<button onclick="nextRoom(1)">
+Begin
+</button>
+</div>
+
+<!-- Room 1 -->
+
+<div id="room1" class="room">
+<h2>Room 1 - Keypad Lock</h2>
+
+<p>
+Clue:
+2 books,
+5 candles,
+8 stars,
+1 moon.
+</p>
+
+<p>Enter the 4-digit code:</p>
+
+<input id="codeInput" maxlength="4">
+
+<br>
+
+<button onclick="checkCode()">
+Unlock
+</button>
+
+<p id="codeMsg"></p>
+</div>
+
+<!-- Room 2 -->
+
+<div id="room2" class="room">
+
+<h2>Room 2 - Hidden Object</h2>
+
+<p>
+Click the correct artifact.
+</p>
+
+<button onclick="wrongObject()">Scroll</button>
+<button onclick="correctObject()">Crystal</button>
+<button onclick="wrongObject()">Torch</button>
+
+<p id="objectMsg"></p>
+
+</div>
+
+<!-- Room 3 -->
+
+<div id="room3" class="room">
+
+<h2>Room 3 - Memory Pattern</h2>
+
+<p class="hidden-word">
+BLUE → RED → GREEN
+</p>
+
+<p>
+Type the colors separated by commas.
+</p>
+
+<input id="pattern">
+
+<br>
+
+<button onclick="checkPattern()">
+Submit
+</button>
+
+<p id="patternMsg"></p>
+
+</div>
+
+<!-- Room 4 -->
+
+<div id="room4" class="room">
+
+<h2>Room 4 - Riddle</h2>
+
+<p>
+
+I have keys but no locks.<br>
+I have space but no room.<br>
+You can enter but not go outside.<br>
+
+What am I?
+
+</p>
+
+<input id="riddle">
+
+<br>
+
+<button onclick="checkRiddle()">
+Answer
+</button>
+
+<p id="riddleMsg"></p>
+
+</div>
+
+<!-- Final -->
+
+<div id="finish" class="room">
+
+<h1>🎉 Escape Successful!</h1>
+
+<p>
+
+You solved every puzzle and unlocked the exit from the Forgotten Archive.
+
+</p>
+
+<button onclick="restartGame()">
+Play Again
+</button>
+
+</div>
+
+<script>
+
+let keys = 0;
+
+function hideAll() {
+
+    document.querySelectorAll(".room")
+        .forEach(r => r.classList.remove("active"));
+
+}
+
+function nextRoom(num) {
+
+    hideAll();
+
+    if(num === 1)
+        document.getElementById("room1").classList.add("active");
+
+    if(num === 2)
+        document.getElementById("room2").classList.add("active");
+
+    if(num === 3)
+        document.getElementById("room3").classList.add("active");
+
+    if(num === 4)
+        document.getElementById("room4").classList.add("active");
+
+}
+
+function addKey(){
+
+    keys++;
+
+    document.getElementById("keys").innerText = keys;
+
+}
+
+function checkCode(){
+
+    let value =
+        document.getElementById("codeInput").value;
+
+    if(value === "2581"){
+
+        document.getElementById("codeMsg").innerHTML =
+        "<span class='success'>Correct! Key collected.</span>";
+
+        addKey();
+
+        setTimeout(() => nextRoom(2), 1000);
+
+    }else{
+
+        document.getElementById("codeMsg").innerHTML =
+        "<span class='fail'>Incorrect.</span>";
+
+    }
+
+}
+
+function correctObject(){
+
+    document.getElementById("objectMsg").innerHTML =
+    "<span class='success'>You found the artifact!</span>";
+
+    addKey();
+
+    setTimeout(() => nextRoom(3),1000);
+
+}
+
+function wrongObject(){
+
+    document.getElementById("objectMsg").innerHTML =
+    "<span class='fail'>Nothing happens.</span>";
+
+}
+
+function checkPattern(){
+
+    let answer =
+        document.getElementById("pattern")
+        .value
+        .toLowerCase()
+        .replace(/\s/g,"");
+
+    if(answer === "blue,red,green"){
+
+        document.getElementById("patternMsg").innerHTML =
+        "<span class='success'>Sequence correct.</span>";
+
+        addKey();
+
+        setTimeout(()=>nextRoom(4),1000);
+
+    }
+
+    else{
+
+        document.getElementById("patternMsg").innerHTML =
+        "<span class='fail'>Wrong order.</span>";
+
+    }
+
+}
+
+function checkRiddle(){
+
+    let ans =
+        document.getElementById("riddle")
+        .value
+        .trim()
+        .toLowerCase();
+
+    if(ans === "keyboard"){
+
+        addKey();
+
+        hideAll();
+
+        document.getElementById("finish")
+            .classList.add("active");
+
+    }
+
+    else{
+
+        document.getElementById("riddleMsg").innerHTML =
+        "<span class='fail'>Try again.</span>";
+
+    }
+
+}
+
+function restartGame(){
+
+    location.reload();
+
+}
+
+</script>
+
+</body>
+</html>
